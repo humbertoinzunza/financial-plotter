@@ -1,0 +1,45 @@
+.overlay-div {
+    background-color: rgba(0,0,0,0);
+}
+
+.form-div {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+mat-card {
+    background-color: transparent;
+}
+mat-card-header {
+    padding: 10px;
+    padding-top: 0px;
+}
+mat-card-content {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 10px;
+}
+
+button.accept {
+    background-color: green;
+    color: #fff;
+}
+
+button.cancel {
+    background-color: red;
+    color: #fff;
+}
+
+button.accept:disabled {
+    background-color: lightgray;
+    color: black;
+}

@@ -1,0 +1,125 @@
+* {
+    box-sizing: border-box;
+}
+a {
+    font-size: small;
+    color: gray;
+}
+h3 {
+    margin: 10px 0;
+}
+h4 {
+    margin: 15px 0;
+}
+input {
+    font-size: small;
+}
+p {
+    margin: 0;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+.study-container:hover {
+    background-color: lightblue;
+}
+.main-container {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.container {
+    display: grid;
+    grid-template-columns: auto minmax(50%, auto);
+    grid-template-rows: auto 50px;
+    min-height: 400px;
+    min-width: 800px;
+    padding: 10px;   
+}
+.column-container {
+    border: 1px solid gray;
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    gap: 5px;
+    padding: 5px;
+    width: auto;
+}
+#study-search {
+    border: none;
+    grid-column: 1;
+    grid-row: 1;
+}
+#study-list {
+    height: 100%;
+    margin: 0;
+    max-height: 400px;
+    overflow-y: scroll;
+}
+#study-display {
+    grid-column: 2;
+    grid-row: 1;
+    max-height: 400px;
+    overflow-y: scroll;
+}
+#button-container {
+    display: flex;
+    flex-direction: row;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: end;
+}
+.row-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 2px 5px;
+}
+.study-list-item {
+    justify-content: flex-start;
+}
+.added-study {
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.study-container > p {
+    font-size: 20px;
+}
+.add-button {
+    background: url("/assets/icons/plus.png");
+    margin-right: 10px;
+}
+.remove-button {
+    background: url("/assets/icons/minus.png");
+}
+.configure-button {
+    background: url("/assets/icons/setting.png");
+}
+#back-link {
+    cursor: pointer;
+}
+.small-button {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    height: 20px;
+    margin-bottom: auto;
+    margin-top: auto;
+    width: 20px;
+}
+#params-settings {
+    display: none;
+    max-height: 600px;
+    overflow-y: scroll;
+}
+.params-container {
+    border: 1px solid black;
+}
+.chart-params-container {
+    border: 1px solid black;
+    min-height: 200px;
+    min-width: 400px;
+}

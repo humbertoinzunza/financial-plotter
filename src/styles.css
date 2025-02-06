@@ -1,0 +1,16 @@
+html {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+body {
+    height: 99vh;
+    margin: 0;
+    width: 99vw;
+}
+
+app-root {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+}

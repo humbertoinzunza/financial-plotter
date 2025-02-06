@@ -1,0 +1,45 @@
+<div class="main-div">
+    <studies-selector #studiesSelector></studies-selector>
+    <timeframe-selector #timeframeSelector [timeframeData]="timeframeData"></timeframe-selector>
+    <span #errorTooltip class="tooltip">{{ symbolInputErrorMessage }}</span>
+    <div class="toolbar-div">
+        <input #textInput type="text" #symbolInput placeholder="Enter symbol" (keyup.enter)="onSymbolEnter($event)">
+        <button #timeframeButton (click)="onTimeframeButtonClick()">
+            <div class="inner-div">
+                <img src="/assets/icons/clock-light-mode.png">
+                <p>Timeframe</p>
+            </div>
+        </button>
+        <button [matMenuTriggerFor]="menu">
+            <div class="inner-div">
+                <img src="/assets/icons/candlestick-light-mode.png">
+                <p>Style</p>
+            </div>
+        </button>
+        <mat-menu #menu="matMenu" yPosition="below">
+            <button mat-menu-item [matMenuTriggerFor]="chartStyles">Chart Styles</button>
+            <div mat-menu-item>
+                <mat-checkbox [(ngModel)]="isLogScale">Use log scale</mat-checkbox>
+            </div>
+        </mat-menu>
+        <mat-menu #chartStyles="matMenu">
+            <button mat-menu-item (click)="onCandlestickChartStyleSelected()">Candlesticks</button>
+            <button mat-menu-item (click)="onBarChartStyleSelected()">Bars</button>
+            <button mat-menu-item (click)="onLineChartStyleSelected()">Line</button>
+        </mat-menu>
+        <button #studiesButton (click)="onStudiesButtonClick()">
+            <div class="inner-div">
+                <img src="/assets/icons/flask-light-mode.png">
+                <p>Studies</p>
+            </div>
+        </button>
+    </div>
+    <div class="chart-div">
+        <chart #priceChart class="price-chart" (onResize)="onChartResized()"></chart>
+    </div>
+    <div #studiesDiv class="studies-div">
+        @for (study of currentLowerStudyList; track study) {
+            <chart #studyChart class="study-chart"></chart>
+        }
+    </div>
+</div>

@@ -1,0 +1,90 @@
+.main-div {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: 40px 1fr auto;
+    height: 100%;
+    width: 100%;
+}
+.toolbar-div {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    margin: 1px 0;
+    width: 100%;
+}
+
+p {
+    margin: 5px;
+    align-content: center;
+}
+
+img {
+    max-height: 30px;
+    max-width: 30px;
+}
+
+.inner-div {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+}
+
+.tooltip {
+    align-content: center;
+    background-color: red;
+    border-radius: 5%;
+    color: white;
+    display: none;
+    font-size: medium;
+    left: -2px; /* To override parent's padding and border */
+    padding: 5px;
+    position: absolute;
+    text-align: center;
+    top: 1px; /* To be below margin of parent */
+    z-index: 1;
+}
+
+.error-input {
+    box-shadow: 0 0 3px #CC0000;
+}
+
+.error-input:focus {
+    border-color: #CC0000;
+    outline: #CC0000;
+}
+
+timeframe-selector {
+    display: none;
+    position: absolute;
+    min-width: 400px;
+    z-index: 1;
+}
+
+studies-selector {
+    display: none;
+    position: absolute;
+    z-index: 1;
+}
+.error {
+    font-size: 8px;
+}
+.price-chart {
+    flex: 1 1 auto;
+    min-height: 400px;
+    margin-bottom: 1px;
+}
+.study-chart {
+    box-sizing: border-box;
+    max-height: 200px;
+    margin-bottom: 1px;
+}
+.chart-div {
+    display: flex;
+    flex-direction: column;
+}
+.studies-div {
+    display: flex;
+    flex-direction: column;
+    max-height: 250px;
+    overflow-y: scroll;
+}

@@ -1,0 +1,109 @@
+<div class="container">
+    <div class="chart">
+        <svg #mainSvg class="main-svg">
+            <g class="grid-layer">
+                <g #gridX class="x">
+                    @for(line of gridXData; track $index) {
+                        <line class="xgrid" [attr.x1]="gridXData[$index].x1" [attr.y1]="gridXData[$index].y1" 
+                        [attr.x2]="gridXData[$index].x2" [attr.y2]="gridXData[$index].y2"></line>
+                    }
+                </g>
+                <g #gridY class="y">
+                    @for(line of gridYData; track $index) {
+                        <line class="xgrid" [attr.x1]="gridYData[$index].x1" [attr.y1]="gridYData[$index].y1" 
+                        [attr.x2]="gridYData[$index].x2" [attr.y2]="gridYData[$index].y2"></line>
+                    }
+                </g>
+            </g>
+            <g class="price-chart-layer">
+                <g class="candlestick-layer">   
+                    @for (downWick of candlestickChartData.downWicks; track downWick) {
+                        <line [attr.x1]="downWick.x1" [attr.y1]="downWick.y1"
+                        [attr.x2]="downWick.x2" [attr.y2]="downWick.y2" [attr.stroke]="downtickColor" />
+                    }
+                    @for (upWick of candlestickChartData.upWicks; track upWick) {
+                        <line [attr.x1]="upWick.x1" [attr.y1]="upWick.y1"
+                        [attr.x2]="upWick.x2" [attr.y2]="upWick.y2" [attr.stroke]="uptickColor" />
+                    }
+                    @for (neutralWick of candlestickChartData.neutralWicks; track neutralWick) {
+                        <line [attr.x1]="neutralWick.x1" [attr.y1]="neutralWick.y1"
+                        [attr.x2]="neutralWick.x2" [attr.y2]="neutralWick.y2" [attr.stroke]="notickColor" />
+                    }
+                    @for (downBody of candlestickChartData.downBodies; track downBody) {
+                        <rect [attr.x]="downBody.x" [attr.y]="downBody.y" [attr.width]="candlestickChartData.width"
+                        [attr.height]="downBody.height" [attr.fill]="downtickColor" />
+                    }
+                    @for (upBody of candlestickChartData.upBodies; track upBody) {
+                        <rect [attr.x]="upBody.x" [attr.y]="upBody.y" [attr.width]="candlestickChartData.width"
+                        [attr.height]="upBody.height" [attr.fill]="uptickColor" />
+                    }   
+                    @for (neutralBody of candlestickChartData.neutralBodies; track neutralBody) {
+                        <line [attr.x1]="neutralBody.x1" [attr.y1]="neutralBody.y1"
+                        [attr.x2]="neutralBody.x2" [attr.y2]="neutralBody.y2" [attr.stroke]="notickColor" />
+                    }     
+                </g>
+                <g class="bar-layer">
+                    @for (downLine of priceBarChartData.downLines; track downLine) {
+                        <line [attr.x1]="downLine.x1" [attr.y1]="downLine.y1"
+                        [attr.x2]="downLine.x2" [attr.y2]="downLine.y2" [attr.stroke]="downtickColor" />
+                    }
+                    @for (upLine of priceBarChartData.upLines; track upLine) {
+                        <line [attr.x1]="upLine.x1" [attr.y1]="upLine.y1"
+                        [attr.x2]="upLine.x2" [attr.y2]="upLine.y2" [attr.stroke]="uptickColor" />
+                    }
+                    @for (neutralLine of priceBarChartData.neutralLines; track neutralLine) {
+                        <line [attr.x1]="neutralLine.x1" [attr.y1]="neutralLine.y1"
+                        [attr.x2]="neutralLine.x2" [attr.y2]="neutralLine.y2" [attr.stroke]="notickColor" />
+                    }
+                </g>
+                <g class="line-layer">
+                    @for (downLine of priceLineChartData.downLines; track downLine) {
+                        <line [attr.x1]="downLine.x1" [attr.y1]="downLine.y1"
+                        [attr.x2]="downLine.x2" [attr.y2]="downLine.y2" [attr.stroke]="downtickColor" />
+                    }
+                    @for (upLine of priceLineChartData.upLines; track upLine) {
+                        <line [attr.x1]="upLine.x1" [attr.y1]="upLine.y1"
+                        [attr.x2]="upLine.x2" [attr.y2]="upLine.y2" [attr.stroke]="uptickColor" />
+                    }
+                    @for (neutralLine of priceLineChartData.neutralLines; track neutralLine) {
+                        <line [attr.x1]="neutralLine.x1" [attr.y1]="neutralLine.y1"
+                        [attr.x2]="neutralLine.x2" [attr.y2]="neutralLine.y2" [attr.stroke]="notickColor" />
+                    }
+                </g>
+            </g>
+            <g class="studies-layer">
+                <g class="circle-layer">
+                    @for (studyData of studyCircleData; track studyData) {
+                        @for (circle of studyData.circleData; track circle) {
+                            <circle [attr.cx]="circle.cx" [attr.cy]="circle.cy" [attr.r]="studyData.r"
+                            [attr.fill]="studyData.color" />
+                        }
+                    }
+                </g>
+                <g class="line-layer">
+                    @for (studyData of studyLineData; track studyData) {
+                        @for (line of studyData.lineData; track line) {
+                            <line [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2"
+                            [attr.y2]="line.y2" [attr.stroke]="studyData.color"/>
+                        }
+                    }
+                </g>
+                <g class="rectagle-layer">
+                    @for (studyData of studyRectangleData; track studyData) {
+                        @for (rectangle of studyData.rectangleData; track rectangle) {
+                            <rect [attr.x]="rectangle.x" [attr.y]="rectangle.y" [attr.width]="studyData.width"
+                            [attr.height]="rectangle.height" [attr.fill]="studyData.color" />
+                        }
+                    }
+                </g>
+            </g>
+        </svg>
+    </div>
+    <div class="price-levels">
+        <svg class="price-level-svg">
+            @for(priceLabel of priceLabelData; track priceLabel) {
+                <text x="0" [attr.y]="priceLabel.y" font-size="12px" fill="gray">{{ priceLabel.text }}</text>
+            }
+        </svg>
+    </div>
+</div>

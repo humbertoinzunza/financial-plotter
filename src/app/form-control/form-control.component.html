@@ -1,0 +1,34 @@
+<div [formGroup]="form">
+    @switch (controlData.controlType) {
+        @case ('textbox') {
+            <mat-form-field>
+                <mat-label>{{ controlData.label }}</mat-label>
+                <input matInput [formControlName]="controlData.key" type="controlData.type" value="controlData.value" />
+            </mat-form-field>
+        }
+        @case ('dropdown') {
+            <mat-form-field>
+                <mat-label>{{ controlData.label }}</mat-label>
+                <mat-select [formControlName]="controlData.key">
+                    @for (option of controlData.options; track option) {
+                        <mat-option value="option.key">{{ option.value }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        }
+        @case ('radio') {
+            <div class="radio-div">
+                <div class="header">
+                    <label>{{ controlData.label }}</label>
+                </div>
+                <div class="content">
+                    <mat-radio-group [formControlName]="controlData.key">
+                        @for (option of controlData.options; track option) {
+                            <mat-radio-button value="option.key">{{ option.value }}</mat-radio-button>
+                        }
+                    </mat-radio-group>
+                </div>
+            </div>
+        }
+    }
+</div>

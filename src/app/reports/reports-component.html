@@ -1,0 +1,53 @@
+<div class="main-container">
+    <div class="reports-list">
+        <h4>Available Reports</h4>
+        <mat-list role="list">
+            @for (report of availableReports; track report) {
+                <mat-list-item role="listitem" (click)="activeReport = report" [class.active-item]="report===activeReport">{{ report }}</mat-list-item>
+            }
+        </mat-list>
+    </div>
+    <div class="inputs-container" [formGroup]="form">
+        <div class="inputs">
+            <div class="header">
+                <h4>Timeframe Selection</h4>
+            </div>
+            <div class="content">
+                <mat-form-field>
+                    <mat-label>Period</mat-label>
+                    <input matInput formControlName="period" type="number" min="1" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Period Type</mat-label>
+                    <mat-select formControlName="periodType">
+                        @for (periodType of periodTypes; track periodType) {
+                            <mat-option value="periodType">{{ periodType }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Frequency</mat-label>
+                    <input matInput formControlName="frequency" type="number" min="1" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Frequency Type</mat-label>
+                    <mat-select formControlName="frequencyType">
+                        @for (frequencyType of frequencyTypes; track frequencyType) {
+                            <mat-option value="frequencyType">{{ frequencyType }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="inputs">
+            <div class="header">
+                <h4>Report Parameters</h4>
+            </div>
+            <div class="content">
+                @for (input of selectedReport.reportInputs; track input) {
+                    <form-control [form]="form" [controlData]="input"></form-control>
+                }
+            </div>
+        </div>
+    </div>
+</div>

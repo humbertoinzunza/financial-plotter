@@ -1,0 +1,110 @@
+<div class="main-container">
+    <div #studySelector class="container">
+        <div class="column-container" id="study-search">
+            <mat-form-field>
+                <mat-label>Search study</mat-label>
+                <input matInput  [(ngModel)]="valueToSearch" (keyup)="searchStudies()"/>
+            </mat-form-field>
+            <div #availableStudies class="column-container" id="study-list">
+                @for(study of displayedStudies; track study) {
+                    <div class="row-container study-list-item">
+                        <button class="add-button small-button" (click)="onAddStudyButtonClicked(study)"></button>
+                        <p>{{ study }}</p>
+                    </div>
+                }
+            </div>
+        </div>
+        <div #addedStudies class="column-container" id="study-display">
+            @if (currentUpperStudyList.length > 0) {
+                <h4>Upper Studies</h4>
+            }
+            @for(study of currentUpperStudyList; track $index) {
+                <div id="study{{$index}}" class="row-container added-study">
+                    <button class="remove-button small-button" (click)="onRemoveUpperStudyButtonClicked($index)"></button>
+                    <p>{{ study.fullName }}</p>
+                    <button class="configure-button small-button" (click)="onUpperStudySettingsButtonClicked($index)"></button>
+                </div>
+            }
+            @if (currentLowerStudyList.length > 0) {
+                <h4>Lower Studies</h4>
+            }
+            @for(study of currentLowerStudyList; track $index) {
+                <div id="study{{$index}}" class="row-container added-study">
+                    <button class="remove-button small-button" (click)="onRemoveLowerStudyButtonClicked($index)"></button>
+                    <p>{{ study.fullName }}</p>
+                    <button class="configure-button small-button" (click)="onLowerStudySettingsButtonClicked($index)"></button>
+                </div>
+            }
+        </div>
+        <div id="button-container">
+            <button mat-raised-button (click)="onCancel()">Cancel</button>
+            <button mat-raised-button (click)="onSubmit()">Accept</button>
+        </div>
+    </div>
+    <!-- This part is to edit the selected study's parameters.-->
+    <div #paramsSettings class="column-container" id="params-settings">
+        <h4>Edit Study</h4>
+        <a id="back-link" (click)="onBackButtonClicked()">Back to studies</a>
+        @if (currentlySelectedStudy) {
+            <h3>{{currentlySelectedStudy.name}}</h3>
+            <div class="column-container">
+                    @for(parameter of currentlySelectedStudy.parameters; track parameter) {
+                        @switch (parameter.info.type) {
+                            @case (parameterType.Decimal) {
+                                <mat-form-field>
+                                    <mat-label>{{ parameter.info.name }} : </mat-label>
+                                    <input matInput type="number" step="0.01" [(ngModel)]="parameter.value"
+                                    min="{{(parameter.info | numericParameterInfoConverter).minValue}}">
+                                </mat-form-field>
+                            }
+                            @case (parameterType.Enum) {
+                                <mat-form-field>
+                                    <mat-label>{{ parameter.info.name }} : </mat-label>
+                                    <mat-select [(value)]="parameter.value">
+                                        @for(value of (parameter.info | enumParameterInfoConverter).getEnumValues(); track value) {
+                                            <mat-option [value]="value">{{ value }}</mat-option>
+                                        }
+                                    </mat-select>
+                                </mat-form-field>
+                            }
+                            @case (parameterType.Integer) {
+                                <mat-form-field>
+                                    <mat-label>{{ parameter.info.name }} : </mat-label>
+                                    <input matInput type="number" step="1" [(ngModel)]="parameter.value"
+                                    min="{{(parameter.info | numericParameterInfoConverter).minValue}}">
+                                </mat-form-field>
+                            }
+                            @case (parameterType.String) {
+                                <mat-form-field>
+                                    <mat-label>{{ parameter.info.name }} : </mat-label>
+                                    <input matInput [(ngModel)]="parameter.value">
+                                </mat-form-field>
+                            }
+                        }
+                    }
+            </div>
+            <div class="column-container">
+                <mat-tab-group>
+                    @for(styleData of currentlySelectedStudy.chartStyleData; track styleData) {
+                        <mat-tab label="{{styleData.name}}">
+                            <div class="column-container">
+                                <mat-form-field>
+                                    <mat-label>Plot color</mat-label>
+                                    <input matInput type="color" [(ngModel)]="styleData.color" />
+                                </mat-form-field>
+                                <mat-form-field>
+                                    <mat-label>Chart Type</mat-label>
+                                    <mat-select [(value)]="styleData.studyChartType">
+                                        @for(chartType of styleData.getAvailableChartTypes(); track chartType) {
+                                            <mat-option [value]="chartType">{{ chartType }}</mat-option>
+                                        }
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </mat-tab>
+                    }
+                </mat-tab-group>
+            </div>
+        }
+    </div>
+</div>
