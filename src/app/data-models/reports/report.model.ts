@@ -7,5 +7,6 @@ export enum AvailableReports {
 }
 export abstract class Report {
     public values: Table = new Table();
-    public abstract reportInputs: FormControlData<string>[];
+    public abstract reportInputs: FormControlData<any>[];
+    public abstract needsTimeframeData: boolean;
 }

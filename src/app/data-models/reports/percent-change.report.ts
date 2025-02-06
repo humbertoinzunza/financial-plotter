@@ -1,6 +1,7 @@
 import { FormControlData } from "../form-control-data.model"
 import { Report } from "./report.model"
 export class PercentChangeReport extends Report {
+    public override needsTimeframeData: boolean = true;
     public override reportInputs: FormControlData<any>[] = [
         new FormControlData({
             key: 'symbol',

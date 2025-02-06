@@ -6,6 +6,7 @@ export class FormControlData<T> {
     order: number;
     controlType: string;
     type: string;
+    min: number;
     options: { key: string; value: string }[];
 
     constructor(options: {
@@ -16,6 +17,7 @@ export class FormControlData<T> {
         order?: number;
         controlType?: string;
         type?: string;
+        min?: number;
         options?: { key: string; value: string }[];
     }) {
         this.value = options.value;
@@ -25,6 +27,7 @@ export class FormControlData<T> {
         this.order = options.order === undefined ? 1 : options.order;
         this.controlType = options.controlType || '';
         this.type = options.type || '';
+        this.min = options.min || Number.NEGATIVE_INFINITY;
         this.options = options.options || [];
     }
 }

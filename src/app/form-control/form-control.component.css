@@ -2,7 +2,11 @@
     font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-.radio-div, mat-radio-group {
+.radio-div {
     display: flex;
     flex-direction: column;
+}
+mat-radio-group {
+    display: flex;
+    flex-direction: row;
 }
