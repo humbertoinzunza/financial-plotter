@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { MultiChartComponent } from "./multi-chart/multi-chart.component";
 import { SideBarComponent } from "./side-bar/side-bar.component";
 import { RouterOutlet } from '@angular/router';
 

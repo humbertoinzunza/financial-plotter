@@ -1,5 +1,5 @@
 export class StudyDto {
-    constructor(public columns: {name: string, values: any[]}[] = [], public booleanColumns: {name: string, values: any[]}[] = []) { }
+    constructor(public columns: {name: string, values: any[]}[] = []) { }
 }
 
 export class StudiesDto {

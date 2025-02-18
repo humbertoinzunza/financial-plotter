@@ -1,12 +1,34 @@
-import { BooleanStudyChartType, ConstantStudyChartType, NumericStudyChartType, PriceChartType, StudyValueType } from "../data-models/charting.enums";
+/*import { BooleanChartType, ConstantChartType, NumericChartType, PriceChartType, ChartValueType } from "../data-models/charting.enums";
 import { MarketData } from "../data-models/market-data.model";
-import { ChartStyleData, Parameter, Study } from "../data-models/study.model";
+import { Study } from "../data-models/study.model";
+import { ChartStyleData, Parameter } from "../data-models/chart-data.interface";
 import { ChartComponent } from "../multi-chart/chart/chart.component";
 import { Column } from "../data-models/column.model";
 import { QueryList } from "@angular/core";
+import {
+    CandlestickChartData,
+    CircleData,
+    LineData,
+    PolygonData,
+    RectangleData,
+    PriceBarChartData,
+    YAxisLegend,
+    PriceLineChartData,
+    CircleChartData,
+    LineChartData,
+    PolygonChartData,
+    RectangleChartData
+} from "../data-models/charting.models";
+
+export enum ChartFunctionType {
+    LowerStudy,
+    Price,
+    Report
+}
 
 export class ChartingService{
     public priceChartComponent!: ChartComponent;
+    public isReportChart: boolean = false;
     private _studyChartComponents!: QueryList<ChartComponent>;
     private _upperStudies: Study[] = [];
     private _lowerStudies: Study[] = [];
@@ -18,7 +40,6 @@ export class ChartingService{
     private maxX: number = 0;
     private separation: number = 0;
     private width: number = 0;
-    private prevStudyChartNum: number = 0;
     
     get studyChartComponents(): QueryList<ChartComponent> {
         return this._studyChartComponents;
@@ -75,9 +96,11 @@ export class ChartingService{
         this.drawLowerStudies();
     }
     public drawUpperChart(): void {
-        if (this.marketData.length == 0) return;
-        this.drawPriceChart();
-        this.drawUpperStudies();
+        if (!this.isReportChart) {
+            if (this.marketData.length == 0) return;
+            this.drawPriceChart();
+            this.drawUpperStudies();
+        }       
     }
     private drawPriceChart(): void {
         this.createPriceGridAndSetLabels();
@@ -107,34 +130,33 @@ export class ChartingService{
                 const currentStudy: Study = this._lowerStudies[index];
                 for (let chartStyleIndex: number = 0; chartStyleIndex < currentStudy.chartStyleData.length; chartStyleIndex++) {
                     const currentChartStyle: ChartStyleData = currentStudy.chartStyleData[chartStyleIndex];
-                    switch(currentChartStyle.studyValueType) {
-                        case (StudyValueType.Boolean):
-                            const booleanChartType: BooleanStudyChartType = currentChartStyle.studyChartType as BooleanStudyChartType;
-                            if (booleanChartType === BooleanStudyChartType.ArrowDownAtHigh) {
-    
-                            }
-                            else if (booleanChartType === BooleanStudyChartType.ArrowUpAtLow) {
-    
-                            }
+                    switch(currentChartStyle.chartValueType) {
+                        case (ChartValueType.Boolean):
+                            const booleanChartType: BooleanChartType = currentChartStyle.studyChartType as BooleanChartType;
+                            const booleanColumn: Column = currentChartStyle.value as Column;
+                            if (booleanChartType === BooleanChartType.ArrowDownAtHigh)
+                                this.drawBooleanArrowDownAtHigh(booleanColumn, currentChartStyle.color);
+                            else if (booleanChartType === BooleanChartType.ArrowUpAtLow)
+                                this.drawBooleanArrowUpAtLow(booleanColumn, currentChartStyle.color);
                             break;
-                        case (StudyValueType.Constant):
-                            const constantChartType: ConstantStudyChartType = currentChartStyle.studyChartType as ConstantStudyChartType;
+                        case (ChartValueType.Constant):
+                            const constantChartType: ConstantChartType = currentChartStyle.studyChartType as ConstantChartType;
                             const constantValue: number = (currentChartStyle.value as Parameter).value;
-                            if (constantChartType === ConstantStudyChartType.Dot)
+                            if (constantChartType === ConstantChartType.Dot)
                                 this.drawConstantDotStudy(constantValue, currentChartStyle.color, chartComponent, false);
-                            else if (constantChartType === ConstantStudyChartType.Line)
+                            else if (constantChartType === ConstantChartType.Line)
                                 this.drawConstantLineStudy(constantValue, currentChartStyle.color, chartComponent, false);
                             break;
-                        case (StudyValueType.Numeric):
-                            const numericChartType: NumericStudyChartType = currentChartStyle.studyChartType as NumericStudyChartType;
+                        case (ChartValueType.Numeric):
+                            const numericChartType: NumericChartType = currentChartStyle.studyChartType as NumericChartType;
                             const column: Column = currentChartStyle.value as Column;
-                            if (numericChartType === NumericStudyChartType.Bar)
+                            if (numericChartType === NumericChartType.Bar)
                                 this.drawNumericBarStudy(column, currentChartStyle.color, chartComponent, false);
-                            else if (numericChartType === NumericStudyChartType.Dot)
+                            else if (numericChartType === NumericChartType.Dot)
                                 this.drawNumericDotStudy(column, currentChartStyle.color, chartComponent, false);
-                            else if (numericChartType === NumericStudyChartType.Histogram)
+                            else if (numericChartType === NumericChartType.Histogram)
                                 this.drawNumericHistogramStudy(column, currentChartStyle.color, chartComponent, false);
-                            else if (numericChartType === NumericStudyChartType.Line)
+                            else if (numericChartType === NumericChartType.Line)
                                 this.drawNumericLineStudy(column, currentChartStyle.color, chartComponent, false);
                             break;
                     }
@@ -146,44 +168,96 @@ export class ChartingService{
         // Reset study drawings
         this.priceChartComponent.studyLineData = [];
         this.priceChartComponent.studyCircleData = [];
+        this.priceChartComponent.studyPolygonData = [];
         this.priceChartComponent.studyRectangleData = [];
         for (let studyIndex = 0; studyIndex < this._upperStudies.length; studyIndex++) {
             const currentStudy: Study = this._upperStudies[studyIndex];
             for (let chartStyleIndex = 0; chartStyleIndex < currentStudy.chartStyleData.length; chartStyleIndex++) {
                 const currentChartStyle: ChartStyleData = currentStudy.chartStyleData[chartStyleIndex];
-                switch(currentChartStyle.studyValueType) {
-                    case (StudyValueType.Boolean):
-                        const booleanChartType: BooleanStudyChartType = currentChartStyle.studyChartType as BooleanStudyChartType;
-                        if (booleanChartType === BooleanStudyChartType.ArrowDownAtHigh) {
-
-                        }
-                        else if (booleanChartType === BooleanStudyChartType.ArrowUpAtLow) {
-
-                        }
+                switch(currentChartStyle.chartValueType) {
+                    case (ChartValueType.Boolean):
+                        const booleanChartType: BooleanChartType = currentChartStyle.studyChartType as BooleanChartType;
+                        const booleanColumn: Column = currentChartStyle.value as Column;
+                        if (booleanChartType === BooleanChartType.ArrowDownAtHigh)
+                            this.drawBooleanArrowDownAtHigh(booleanColumn, currentChartStyle.color);
+                        else if (booleanChartType === BooleanChartType.ArrowUpAtLow)
+                            this.drawBooleanArrowUpAtLow(booleanColumn, currentChartStyle.color);
                         break;
-                    case (StudyValueType.Constant):
-                        const constantChartType: ConstantStudyChartType = currentChartStyle.studyChartType as ConstantStudyChartType;
+                    case (ChartValueType.Constant):
+                        const constantChartType: ConstantChartType = currentChartStyle.studyChartType as ConstantChartType;
                         const constantValue: number = (currentChartStyle.value as Parameter).value;
-                        if (constantChartType === ConstantStudyChartType.Dot)
+                        if (constantChartType === ConstantChartType.Dot)
                             this.drawConstantDotStudy(constantValue, currentChartStyle.color, this.priceChartComponent, true);
-                        else if (constantChartType === ConstantStudyChartType.Line)
+                        else if (constantChartType === ConstantChartType.Line)
                             this.drawConstantLineStudy(constantValue, currentChartStyle.color, this.priceChartComponent, true);
                         break;
-                    case (StudyValueType.Numeric):
-                        const numericChartType: NumericStudyChartType = currentChartStyle.studyChartType as NumericStudyChartType;
+                    case (ChartValueType.Numeric):
+                        const numericChartType: NumericChartType = currentChartStyle.studyChartType as NumericChartType;
                         const column: Column = currentChartStyle.value as Column;
-                        if (numericChartType === NumericStudyChartType.Bar)
+                        if (numericChartType === NumericChartType.Bar)
                             this.drawNumericBarStudy(column, currentChartStyle.color, this.priceChartComponent, true);
-                        else if (numericChartType === NumericStudyChartType.Dot)
+                        else if (numericChartType === NumericChartType.Dot)
                             this.drawNumericDotStudy(column, currentChartStyle.color, this.priceChartComponent, true);
-                        else if (numericChartType === NumericStudyChartType.Histogram)
+                        else if (numericChartType === NumericChartType.Histogram)
                             this.drawNumericHistogramStudy(column, currentChartStyle.color, this.priceChartComponent, true);
-                        else if (numericChartType === NumericStudyChartType.Line)
+                        else if (numericChartType === NumericChartType.Line)
                             this.drawNumericLineStudy(column, currentChartStyle.color, this.priceChartComponent, true);
                         break;
                 }
             }
         }
+    }
+    private drawBooleanArrowDownAtHigh(column: Column, color: string) {
+        let values: any[] = column.values;
+        let high: any[] = this.marketData.high.values;
+        if (this._priceChartIsLogScale) values = values.map(value => Math.log10(value));
+        let x: number = this.minX;
+        let y: number;
+        let studyPolygonData: StudyPolygonChartData = new StudyPolygonChartData(color);
+        for (let i = 0; i < values.length; i++) {
+            if (values[i] === true) {
+                let points: string = '';
+                y = (this.priceChartComponent.maxY - high[i]) * this.priceChartComponent.dy - this.separation - this.width;
+                points += x.toString() + ',' + y.toString() + ' ';
+                x += this.width / 2;
+                y += this.width;
+                points += x.toString() + ',' + y.toString() + ' ';
+                x += this.width / 2;
+                y -= this.width;
+                points += x.toString() + ',' + y.toString() + ' ';
+                x -= this.width / 2;
+                y += this.width * 0.2;
+                points += x.toString() + ',' + y.toString();
+                studyPolygonData.polygonData.push(new PolygonData(points));
+            }
+        }
+        this.priceChartComponent.studyPolygonData.push(studyPolygonData);
+    }
+    private drawBooleanArrowUpAtLow(column: Column, color: string) {
+        let values: any[] = column.values;
+        let low: any[] = this.marketData.low.values;
+        if (this._priceChartIsLogScale) values = values.map(value => Math.log10(value));
+        let x: number = this.minX;
+        let y: number;
+        let studyPolygonData: StudyPolygonChartData = new StudyPolygonChartData(color);
+        for (let i = 0; i < values.length; i++) {
+            if (values[i] === true) {
+                let points: string = '';
+                y = (this.priceChartComponent.maxY - low[i]) * this.priceChartComponent.dy + this.separation + this.width;
+                points += x.toString() + ',' + y.toString() + ' ';
+                x += this.width / 2;
+                y -= this.width;
+                points += x.toString() + ',' + y.toString() + ' ';
+                x += this.width / 2;
+                y += this.width;
+                points += x.toString() + ',' + y.toString() + ' ';
+                x -= this.width / 2;
+                y -= this.width * 0.2;
+                points += x.toString() + ',' + y.toString();
+                studyPolygonData.polygonData.push(new PolygonData(points));
+            }
+        }
+        this.priceChartComponent.studyPolygonData.push(studyPolygonData);
     }
     private drawConstantDotStudy(constantValue: number, color: string, chartComponent: ChartComponent, isPriceChart: boolean): void {
         // Since it's a constant value, the graph is simply a line composed of dots
@@ -318,7 +392,7 @@ export class ChartingService{
                 for (let i = 0; i < linearScale.length; i++) {
                     const y: string = ((currentChartComponent.maxY - linearScale[i]) * currentChartComponent.dy).toString();
                     currentChartComponent.gridYData[i] = new LineData(x1, y, x2, y);
-                    currentChartComponent.priceLabelData[i] = new PriceLabelData(y, linearScale[i].toString());
+                    currentChartComponent.priceLabelData[i] = new YAxisLegend(y, linearScale[i].toString());
                 }
                 // Set the data for X-axis
                 const y1: string = '0';
@@ -427,7 +501,7 @@ export class ChartingService{
             const currentYPosAsString: string = currentYPos.toString();
             let dollarValue: number = this.priceChartComponent.maxY - currentYPos / this.priceChartComponent.dy;
             if (this._priceChartIsLogScale) dollarValue = Math.pow(10, dollarValue);
-            this.priceChartComponent.priceLabelData[i] = new PriceLabelData(currentYPosAsString, dollarValue.toFixed(4));
+            this.priceChartComponent.priceLabelData[i] = new YAxisLegend(currentYPosAsString, dollarValue.toFixed(4));
             lineArray[i] = new LineData(x1, currentYPosAsString, x2, currentYPosAsString);
             currentYPos += separation;
         }
@@ -575,44 +649,4 @@ export class ChartingService{
             x1 += this.width / 2 + this.separation;
         }
     }
-}
-
-export class PriceLabelData {
-    constructor(public y: string, public text: string) { }
-}
-export class CircleData {
-    constructor(public cx: string, public cy: string) { }
-}
-export class LineData {
-    constructor(public x1: string, public y1: string, public x2: string, public y2: string) { }
-}
-export class RectangleData {
-    constructor(public x: string, public y: string, public height: string) { }
-}
-export class CandlestickChartData {
-    constructor(
-        public width: number = 0,
-        public upBodies: RectangleData[] = [],
-        public downBodies: RectangleData[] = [],
-        public neutralBodies: LineData[] = [],
-        public upWicks: LineData[] = [],
-        public downWicks: LineData[] = [],
-        public neutralWicks: LineData[] = []) { }
-}
-export class PriceLineChartData {
-    constructor(public upLines: LineData[] = [], public downLines: LineData[] = [], public neutralLines: LineData[] = []) {}
-}
-export class PriceBarChartData extends PriceLineChartData {
-    constructor(upLines: LineData[] = [], downLines: LineData[] = [], neutralLines: LineData[] = []) {
-        super(upLines, downLines, neutralLines);
-    }
-}
-export class StudyLineChartData {
-    constructor(public color: string = '#000000', public lineData: LineData[] = []) { }
-}
-export class StudyCircleChartData {
-    constructor(public color: string = '#000000', public r: string, public circleData: CircleData[] = []) { }
-}
-export class StudyRectangleChartData {
-    constructor(public color: string = '#000000', public width: string = '0', public rectangleData: RectangleData[] = []) { }
-}
+}*/

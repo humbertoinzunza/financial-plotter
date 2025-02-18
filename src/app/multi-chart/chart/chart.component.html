@@ -1,6 +1,16 @@
-<div class="container">
+<div class="container" (onResize)="onResize()">
     <div class="chart">
-        <svg #mainSvg class="main-svg">
+        <svg #mainSvg class="main-svg" (mouseenter)="onMouseEnter($event)" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave($event)">
+            <g class="crosshair-layer">
+                @if (crosshairHorizontal) {
+                    <line class="crosshair" [attr.x1]="crosshairHorizontal.x1" [attr.y1]="crosshairHorizontal.y1"
+                    [attr.x2]="crosshairHorizontal.x2" [attr.y2]="crosshairHorizontal.y2"></line>
+                }
+                @if (crosshairVertical) {
+                    <line class="crosshair" [attr.x1]="crosshairVertical.x1" [attr.y1]="crosshairVertical.y1"
+                    [attr.x2]="crosshairVertical.x2" [attr.y2]="crosshairVertical.y2"></line>
+                }
+            </g>
             <g class="grid-layer">
                 <g #gridX class="x">
                     @for(line of gridXData; track $index) {
@@ -73,26 +83,33 @@
             </g>
             <g class="studies-layer">
                 <g class="circle-layer">
-                    @for (studyData of studyCircleData; track studyData) {
-                        @for (circle of studyData.circleData; track circle) {
-                            <circle [attr.cx]="circle.cx" [attr.cy]="circle.cy" [attr.r]="studyData.r"
-                            [attr.fill]="studyData.color" />
+                    @for (data of circleChartData; track data) {
+                        @for (circle of data.circleData; track circle) {
+                            <circle [attr.cx]="circle.cx" [attr.cy]="circle.cy" [attr.r]="data.r"
+                            [attr.fill]="data.color" />
                         }
                     }
                 </g>
                 <g class="line-layer">
-                    @for (studyData of studyLineData; track studyData) {
-                        @for (line of studyData.lineData; track line) {
+                    @for (data of lineChartData; track data) {
+                        @for (line of data.lineData; track line) {
                             <line [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2"
-                            [attr.y2]="line.y2" [attr.stroke]="studyData.color"/>
+                            [attr.y2]="line.y2" [attr.stroke]="data.color"/>
+                        }
+                    }
+                </g>
+                <g class="polygon-layer">
+                    @for (data of polygonChartData; track data) {
+                        @for (polygon of data.polygonData; track polygon) {
+                            <polygon [attr.points]="polygon.points" [attr.fill]="data.color" />
                         }
                     }
                 </g>
                 <g class="rectagle-layer">
-                    @for (studyData of studyRectangleData; track studyData) {
-                        @for (rectangle of studyData.rectangleData; track rectangle) {
-                            <rect [attr.x]="rectangle.x" [attr.y]="rectangle.y" [attr.width]="studyData.width"
-                            [attr.height]="rectangle.height" [attr.fill]="studyData.color" />
+                    @for (data of rectangleChartData; track data) {
+                        @for (rectangle of data.rectangleData; track rectangle) {
+                            <rect [attr.x]="rectangle.x" [attr.y]="rectangle.y" [attr.width]="data.width"
+                            [attr.height]="rectangle.height" [attr.fill]="data.color" />
                         }
                     }
                 </g>
@@ -101,8 +118,8 @@
     </div>
     <div class="price-levels">
         <svg class="price-level-svg">
-            @for(priceLabel of priceLabelData; track priceLabel) {
-                <text x="0" [attr.y]="priceLabel.y" font-size="12px" fill="gray">{{ priceLabel.text }}</text>
+            @for(yAxisLegend of yAxisLegends; track yAxisLegend) {
+                <text x="0" [attr.y]="yAxisLegend.y" font-size="12px" fill="gray">{{ yAxisLegend.text }}</text>
             }
         </svg>
     </div>

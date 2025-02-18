@@ -52,13 +52,12 @@ img {
     border-color: #CC0000;
     outline: #CC0000;
 }
-
-timeframe-selector {
+/*timeframe-selector {
     display: none;
     position: absolute;
     min-width: 400px;
     z-index: 1;
-}
+}*/
 
 studies-selector {
     display: none;

@@ -9,10 +9,11 @@ import { FormsModule } from "@angular/forms";
 import { EnumParameterInfoConverter, NumericParameterInfoConverter } from "../../data-models/study.model";
 import { MatSelectModule } from "@angular/material/select";
 import { MatTabsModule } from "@angular/material/tabs";
+import { MatDialogModule } from "@angular/material/dialog";
 
 @Component({
     selector: 'studies-selector',
-    imports: [EnumParameterInfoConverter, FormsModule, MatInputModule, MatButtonModule, MatSelectModule, MatTabsModule, NumericParameterInfoConverter],
+    imports: [EnumParameterInfoConverter, FormsModule, MatDialogModule, MatInputModule, MatButtonModule, MatSelectModule, MatTabsModule, NumericParameterInfoConverter],
     providers: [],
     styleUrl: './studies-selector.component.css',
     templateUrl: './studies-selector.component.html'
@@ -34,9 +35,6 @@ export class StudiesSelector {
 
     onSubmit(): void {
         this.formSubmittedEvent.emit(true);
-    }
-    onCancel(): void {
-        this.formSubmittedEvent.emit(false);
     }
     onAddStudyButtonClicked(study: string): void {
         const studyType: AvailableStudies = AvailableStudies[study as keyof typeof AvailableStudies];

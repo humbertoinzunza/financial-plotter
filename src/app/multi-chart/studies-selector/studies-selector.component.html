@@ -37,8 +37,8 @@
             }
         </div>
         <div id="button-container">
-            <button mat-raised-button (click)="onCancel()">Cancel</button>
-            <button mat-raised-button (click)="onSubmit()">Accept</button>
+            <button mat-raised-button mat-dialog-close>Cancel</button>
+            <button mat-raised-button mat-dialog-close (click)="onSubmit()">Accept</button>
         </div>
     </div>
     <!-- This part is to edit the selected study's parameters.-->
@@ -85,19 +85,19 @@
             </div>
             <div class="column-container">
                 <mat-tab-group>
-                    @for(styleData of currentlySelectedStudy.chartStyleData; track styleData) {
-                        <mat-tab label="{{styleData.name}}">
+                    @for(data of currentlySelectedStudy.chartData; track data) {
+                        <mat-tab label="{{data.name}}">
                             <div class="column-container">
                                 <mat-form-field>
                                     <mat-label>Plot color</mat-label>
-                                    <input matInput type="color" [(ngModel)]="styleData.color" />
+                                    <input matInput type="color" [(ngModel)]="data.color" />
                                 </mat-form-field>
                                 <mat-form-field>
                                     <mat-label>Chart Type</mat-label>
-                                    <mat-select [(value)]="styleData.studyChartType">
-                                        @for(chartType of styleData.getAvailableChartTypes(); track chartType) {
-                                            <mat-option [value]="chartType">{{ chartType }}</mat-option>
-                                        }
+                                    <mat-select [(value)]="data.studyChartType">
+                                      @for(chartType of data.getAvailableChartTypes(); track chartType) {
+                                      <mat-option [value]="chartType">{{ chartType }}</mat-option>
+                                      }
                                     </mat-select>
                                 </mat-form-field>
                             </div>

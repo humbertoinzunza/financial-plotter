@@ -1,12 +1,12 @@
-import { FormControlData } from "../form-control-data.model"
-import { Report } from "./report.model"
 import { ChartData } from "../chart-data.interface";
 import { ChartValueType, NumericChartType } from "../charting.enums";
+import { FormControlData } from "../form-control-data.model";
+import { Report } from "./report.model";
 
-export class PercentChangeReport extends Report {
+export class DaysInARowReport extends Report {
     public override needsTimeframeData: boolean = true;
     public override reportInputs: FormControlData<any>[] = [
-        new FormControlData({
+        new FormControlData<string>({
             key: 'symbol',
             label: 'Symbol',
             required: true,
@@ -28,6 +28,7 @@ export class PercentChangeReport extends Report {
         })
     ];
     override chartData: ChartData[] = [
-        new ChartData({color: '#02D8E9', chartValueType: ChartValueType.Numeric, chartType: NumericChartType.Histogram})
+        new ChartData({color: '#03D8E9', chartValueType: ChartValueType.Numeric, chartType: NumericChartType.Bar}),
+        new ChartData({color: '#03D8E9', chartValueType: ChartValueType.Numeric, chartType: NumericChartType.Bar})
     ];
 }

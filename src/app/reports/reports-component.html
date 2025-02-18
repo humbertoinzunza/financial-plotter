@@ -22,7 +22,7 @@
                         <mat-label>Period Type</mat-label>
                         <mat-select formControlName="periodType">
                             @for (periodType of periodTypes; track periodType) {
-                                <mat-option value="periodType">{{ periodType }}</mat-option>
+                                <mat-option [value]="periodType">{{ periodType }}</mat-option>
                             }
                         </mat-select>
                     </mat-form-field>
@@ -34,10 +34,11 @@
                         <mat-label>Frequency Type</mat-label>
                         <mat-select formControlName="frequencyType">
                             @for (frequencyType of frequencyTypes; track frequencyType) {
-                                <mat-option value="frequencyType">{{ frequencyType }}</mat-option>
+                                <mat-option [value]="frequencyType">{{ frequencyType }}</mat-option>
                             }
                         </mat-select>
                     </mat-form-field>
+                    <mat-checkbox (change)="useAllDataCheckboxChanged($event.checked)">Use all available data</mat-checkbox>
                 </div>
             </div>
         }
@@ -49,14 +50,42 @@
                 @for (input of selectedReport.reportInputs; track input) {
                     <form-control [form]="form" [controlData]="input"></form-control>
                 }
-                <button mat-raised-button id="submit-button" type="submit">Calculate</button>
+                <button mat-raised-button id="submit-button" type="submit" (click)="onSubmit()">Calculate</button>
             </div>
         </div>
+        @if (errorMessage !== '') {
+            <div class="error-container floating-window">
+                <div class="header">
+                    <h4>Error</h4>
+                </div>
+                <div class="error-content content">
+                    <p class="error-message">{{ errorMessage }}</p>
+                </div>
+            </div>
+        }
     </div>
-    <div class="results floating-window">
-        <div class="header">
-            <h4>Results</h4>
-        </div>
-        <div class="content"></div>
-    </div>
+    @if (availableData) {
+        <div class="results floating-window">
+            <div class="header">
+                <h4>Results</h4>
+            </div>
+            <div class="content">
+                <mat-tab-group>
+                    <mat-tab label="Chart"></mat-tab>
+                    <mat-tab label="Table">
+                        <table mat-table [dataSource]="dataSource">
+                            @for (column of selectedReport.values.columns; track column; let index = $index) {
+                                <ng-container [matColumnDef]="displayedColumns[index]">
+                                    <th mat-header-cell *matHeaderCellDef>{{ column.name }}</th>
+                                    <td mat-cell *matCellDef="let element">{{ element[index] }}</td>
+                                </ng-container>
+                            }
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                        </table>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </div>   
+    }
 </div>

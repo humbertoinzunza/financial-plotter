@@ -4,24 +4,24 @@ export enum PriceChartType {
     Line = 'Line'
 }
 
-export enum BooleanStudyChartType {
+export enum BooleanChartType {
     ArrowDownAtHigh = 'ArrowDownAtHigh',
     ArrowUpAtLow = 'ArrowUpAtLow'
 }
 
-export enum ConstantStudyChartType {
+export enum ConstantChartType {
     Dot = 'Dot',
     Line = 'Line'
 }
 
-export enum NumericStudyChartType {
+export enum NumericChartType {
     Bar = 'Bar',
     Dot = 'Dot',
     Histogram = 'Histogram',
     Line = 'Line'
 }
 
-export enum StudyValueType {
+export enum ChartValueType {
     Boolean,
     Constant,
     Numeric

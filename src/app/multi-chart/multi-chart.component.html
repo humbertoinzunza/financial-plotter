@@ -1,10 +1,8 @@
 <div class="main-div">
-    <studies-selector #studiesSelector></studies-selector>
-    <timeframe-selector #timeframeSelector [timeframeData]="timeframeData"></timeframe-selector>
     <span #errorTooltip class="tooltip">{{ symbolInputErrorMessage }}</span>
     <div class="toolbar-div">
         <input #textInput type="text" #symbolInput placeholder="Enter symbol" (keyup.enter)="onSymbolEnter($event)">
-        <button #timeframeButton (click)="onTimeframeButtonClick()">
+        <button #timeframeButton (click)="openTimeframeDialog()">
             <div class="inner-div">
                 <img src="/assets/icons/clock-light-mode.png">
                 <p>Timeframe</p>
@@ -27,7 +25,7 @@
             <button mat-menu-item (click)="onBarChartStyleSelected()">Bars</button>
             <button mat-menu-item (click)="onLineChartStyleSelected()">Line</button>
         </mat-menu>
-        <button #studiesButton (click)="onStudiesButtonClick()">
+        <button #studiesButton (click)="openStudiesSelectorDialog()">
             <div class="inner-div">
                 <img src="/assets/icons/flask-light-mode.png">
                 <p>Studies</p>
@@ -35,11 +33,14 @@
         </button>
     </div>
     <div class="chart-div">
-        <chart #priceChart class="price-chart" (onResize)="onChartResized()"></chart>
+        <chart #priceChart class="price-chart" 
+        [isPriceChart]="true" [priceChartType]="chartType" [isLogScale]="isLogScale"
+        [marketData]="marketData" [chartData]="upperChartData"></chart>
     </div>
     <div #studiesDiv class="studies-div">
-        @for (study of currentLowerStudyList; track study) {
-            <chart #studyChart class="study-chart"></chart>
+        @for (study of currentLowerStudyList; track $index) {
+            <chart #studyChart class="study-chart"
+            [chartData]="lowerChartData[$index]"></chart>
         }
     </div>
 </div>

@@ -71,3 +71,13 @@ button {
     margin-right: 0;
     margin-top: auto;
 }
+.error-container {
+    margin-bottom: 10px;
+}
+.error-content {
+    justify-content: space-around;
+}
+.error-message {
+    color: red;
+    padding: 20px;
+}

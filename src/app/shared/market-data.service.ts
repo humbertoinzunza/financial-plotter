@@ -63,7 +63,7 @@ export class MarketDataService {
         return this._timeframeData;
     }
     set timeframeData(timeframeData: TimeframeData) {
-        this.timeframeData = timeframeData;
+        this._timeframeData = timeframeData;
         this.updateMarketData();
     }
     get upperStudies(): Study[] {
@@ -81,6 +81,7 @@ export class MarketDataService {
         this.updateLowerStudies();
     }
     public updateMarketData(): void {
+        if (this.symbol === '') return;
         this.dataFetcherService.getPriceHistory(this._symbol, this._timeframeData)
             .subscribe((priceHistoryDto) => {
                 if (!priceHistoryDto.symbolFound) 

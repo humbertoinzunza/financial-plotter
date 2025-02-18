@@ -1,70 +1,57 @@
 <div #overlayDiv class="overlay-div">
     <div class="form-div">
-        <form [formGroup]="timeframeForm" #formDirective="ngForm" 
-        (ngSubmit)="submitForm(formDirective)">
-            <mat-card appearance="outlined" formGroupName="periodGroup">
+        <form [formGroup]="form">
+            <mat-card appearance="outlined">
                 <mat-card-header>
                     <mat-card-title>Period Length</mat-card-title>
                 </mat-card-header>
                 <mat-card-content>
                     <mat-form-field>
-                        <mat-label>Period</mat-label>
-                        <input matInput type="number" min="1"
-                        [(ngModel)]="timeframeData.period"
-                        formControlName="period">
-                        @if (timeframeForm.controls['periodGroup'].get('period')?.invalid) {
-                            <mat-error>Period is <strong>required</strong></mat-error>
-                          }
-                    </mat-form-field>
-                    <mat-form-field>
                         <mat-label>Period Type</mat-label>
-                        <mat-select [(ngModel)]="selectedPeriodType"
-                        formControlName="periodType">
+                        <mat-select
+                            formControlName="periodType">
                             @for (periodType of periodTypes; track periodType) {
                                 <mat-option class="timeframeSelector-mat-option" [value]="periodType">{{ periodType }}</mat-option>
                             }
                         </mat-select>
-                        @if (timeframeForm.controls['periodGroup'].get('periodType')?.invalid) {
-                            <mat-error>Period type is <strong>required</strong></mat-error>
-                          }
-                    </mat-form-field>   
+                    </mat-form-field> 
+                    <mat-form-field>
+                        <mat-label>Period</mat-label>
+                        <input matInput type="number" min="1"
+                            formControlName="period">
+                    </mat-form-field>
                 </mat-card-content>
             </mat-card>
-            <mat-card appearance="outlined" formGroupName="frequencyGroup">
+            <mat-card appearance="outlined">
                 <mat-card-header>
                     <mat-card-title>Aggregation Frequency</mat-card-title>
                 </mat-card-header>
                 <mat-card-content>
-                    <mat-form-field #frequencyForm>
-                        <mat-label>Frequency</mat-label>
-                        <mat-select [(ngModel)]="timeframeData.frequency"
-                        formControlName="frequency">
-                            @for (validFrequency of validFrequencies; track validFrequency) {
-                                <mat-option class="timeframeSelector-mat-option" [value]="validFrequency">{{ validFrequency }}</mat-option>
-                            }
-                        </mat-select>
-                        @if (timeframeForm.controls['frequencyGroup'].get('frequency')?.invalid) {
-                            <mat-error>Frequency is <strong>required</strong></mat-error>
-                          }
-                    </mat-form-field>
                     <mat-form-field>
                         <mat-label>Frequency Type</mat-label>
-                        <mat-select [(ngModel)]="selectedFrequencyType"
+                        <mat-select
                         (selectionChange)="onSelectedFrequencyTypeChanged()"
                         formControlName="frequencyType">
                             @for (frequencyType of frequencyTypes; track frequencyType) {
                                 <mat-option class="timeframeSelector-mat-option" [value]="frequencyType">{{ frequencyType }}</mat-option>
                             }
                         </mat-select>
-                        @if (timeframeForm.controls['frequencyGroup'].get('frequencyType')?.invalid) {
-                            <mat-error>Frequency type is <strong>required</strong></mat-error>
-                          }
+                    </mat-form-field>
+                    <mat-form-field #frequencyForm>
+                        <mat-label>Frequency</mat-label>
+                        <mat-select
+                        
+                        formControlName="frequency">
+                            @for (validFrequency of validFrequencies; track validFrequency) {
+                                <mat-option class="timeframeSelector-mat-option" [value]="validFrequency">{{ validFrequency }}</mat-option>
+                            }
+                        </mat-select>
                     </mat-form-field>
                 </mat-card-content>
             </mat-card>
             <div class="button-container">
-                <button mat-raised-button class="accept" type="submit" [disabled]="!timeframeForm.valid">Accept</button>
-                <button mat-raised-button class="cancel" (click)="onCancel()">Cancel</button>
+                <button mat-raised-button class="accept" [disabled]="!form.valid" mat-dialog-close (click)="onSubmitForm()">Accept</button>
+                <button mat-raised-button class="cancel" mat-dialog-close>Cancel</button>
             </div>
         </form>
     </div>

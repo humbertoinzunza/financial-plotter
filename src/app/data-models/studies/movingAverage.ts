@@ -1,6 +1,7 @@
-import { NumericStudyChartType, StudyValueType } from "../charting.enums";
+import { NumericChartType, ChartValueType } from "../charting.enums";
 import { MarketDataType } from "../market-data.enums";
-import { ChartStyleData, EnumParameterInfo, NumericParameterInfo, Parameter, Study } from "../study.model";
+import { Study } from "../study.model";
+import { ChartData, EnumParameterInfo, NumericParameterInfo, Parameter } from "../chart-data.interface";
 
 export enum AverageType {
     Exponential = 'Exponential',
@@ -16,17 +17,14 @@ export class MovingAverage extends Study {
     public marketDataType: Parameter = new Parameter(MarketDataType.Close, new EnumParameterInfo('Market Data Type', MarketDataType));
     public override isLowerStudy: boolean = false;
     public override parameters: Parameter[] = [this.length, this.averageType, this.marketDataType, this.displace];
-    public override chartStyleData: ChartStyleData[] = this.createChartStyleData();
     public override name: string = 'MovingAverage';
     public override get fullName(): string {
         return `MovingAverage(${this.length.value}, ${this.averageType.value}, ${this.marketDataType.value}, ${this.displace.value})`;
     }
-    protected override createChartStyleData(): ChartStyleData[] {
-        return  [
-            new ChartStyleData('MovingAverage', this._values.columns[0], '#FFFF00', StudyValueType.Numeric, NumericStudyChartType.Line, NumericStudyChartType)
-        ];
-    }
-    protected override updateChartStyleData(): void {
-        this.chartStyleData[0].value = this._values.columns[0];
+    override chartData: ChartData[] = [
+        new ChartData({name: 'MovingAverage', color: '#FFFF00', chartValueType: ChartValueType.Numeric, chartType: NumericChartType.Line, availableChartTypes: NumericChartType})
+    ];
+    override updateChartData(): void {
+        this.chartData[0].yValues = this._values.columns[0];
     }
 }
