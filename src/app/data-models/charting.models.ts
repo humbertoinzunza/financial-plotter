@@ -48,3 +48,6 @@ export class PolygonChartData {
 export class RectangleChartData {
     constructor(public color: string = '#000000', public width: string = '0', public rectangleData: RectangleData[] = []) { }
 }
+export class ChartDescriptionData {
+    constructor(public text: string, public color: string) {}
+}

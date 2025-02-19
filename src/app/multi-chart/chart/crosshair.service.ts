@@ -5,13 +5,13 @@ import { Subject } from "rxjs";
     providedIn: 'root'
 })
 export class CrosshairService {
-    private _xCoordinate: number = -1;
+    private _x: number = -1;
     public newCoordinate$: Subject<number> = new Subject<number>;
-    public get xCoordinate(): number {
-        return this._xCoordinate;
+    public get x(): number {
+        return this.x;
     }
     public set xCoordinate(value: number) {
-        this._xCoordinate = value;
-        this.newCoordinate$.next(this._xCoordinate);
+        this._x = value;
+        this.newCoordinate$.next(this._x);
     }
 }

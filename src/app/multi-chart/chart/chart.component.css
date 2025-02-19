@@ -1,14 +1,37 @@
+* {
+    margin: 0;
+    padding: 0;
+}
 .container {
     display: grid;
     grid-template-columns: 1fr 50px;
+    grid-template-rows: 30px 1fr;
     background-color: black;
     height: 100%;
     width: 100%;
+}
+.description {
+    border: 1px solid rgb(51, 51, 51);
+    display: flex;
+    flex-direction: row;
+    grid-column: 1/-1;
+    grid-row: 1;
+}
+.description-label {
+    border-right: 1px solid rgb(51, 51, 51);
+    padding: 0 10px;
+}
+
+.chart {
+    grid-column: 1;
+    grid-row: 2;
 }
 
 .price-levels {
     background-color: transparent;
     border-left: 1px solid rgb(51, 51, 51);
+    grid-column: 2;
+    grid-row: 2;
 }
 
 svg {

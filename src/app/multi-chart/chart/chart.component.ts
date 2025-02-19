@@ -1,8 +1,8 @@
 import {
+  AfterContentInit,
   AfterViewInit,
   Component,
   ElementRef,
-  HostListener,
   Input,
   OnDestroy,
   ViewChild
@@ -19,7 +19,8 @@ import {
   RectangleChartData,
   RectangleData,
   PolygonData,
-  CircleData
+  CircleData,
+  ChartDescriptionData
 } from "../../data-models/charting.models";
 import { MarketData } from '../../data-models/market-data.model';
 import { ChartData, Parameter } from '../../data-models/chart-data.interface';
@@ -38,9 +39,11 @@ import { CrosshairService } from './crosshair.service';
 })
 export class ChartComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mainSvg', {static: true}) mainSvgRef!: ElementRef;
+  public descriptionData: ChartDescriptionData[] = [];
   // For price charts
   public gridXData: LineData[] = [];
   public gridYData: LineData[] = [];
+  public yAxisLevel: YAxisLegend | undefined;
   public yAxisLegends: YAxisLegend[] = [];
   public priceBarChartData: PriceBarChartData = new PriceBarChartData();
   public priceLineChartData: PriceBarChartData = new PriceLineChartData();
@@ -85,35 +88,58 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       this.mouseXCoordinateSubscription.unsubscribe();
     this.crosshairService.xCoordinate = event.clientX;
     const bounding: DOMRect = (this.mainSvgRef.nativeElement as Element).getBoundingClientRect();
-    const x: string = (event.clientX - bounding.left).toString();
-    const y: string = (event.clientY - bounding.top).toString();
+    const xCoordinate: number = event.clientX - bounding.left;
+    let yCoordinate: number = event.clientY - bounding.top;
+    const x: string = xCoordinate.toString();
+    const y: string = yCoordinate.toString();
     this.crosshairHorizontal = new LineData('0', y, this.mainSvgRef.nativeElement.clientWidth.toString(), y);
     this.crosshairVertical = new LineData(x, '0', x, this.mainSvgRef.nativeElement.clientHeight.toString());
+    this.updateDescriptionText(xCoordinate);
+    let yLevel: number = this.maxY - yCoordinate / this.dy;
+    if (this._isLogScale) 
+      yLevel = Math.pow(10, yLevel);
+    this.yAxisLevel = new YAxisLegend(y, yLevel.toFixed(2).toString());
   }
 
   onMouseMove(event: MouseEvent) {
     this.crosshairService.xCoordinate = event.clientX;
     const bounding: DOMRect = (this.mainSvgRef.nativeElement as Element).getBoundingClientRect();
-    const x: string = (event.clientX - bounding.left).toString();
-    const y: string = (event.clientY - bounding.top).toString();
+    const xCoordinate: number = event.clientX - bounding.left;
+    let yCoordinate: number = event.clientY - bounding.top;
+    const x: string = xCoordinate.toString();
+    const y: string = yCoordinate.toString();
     this.crosshairHorizontal = new LineData('0', y, this.mainSvgRef.nativeElement.clientWidth.toString(), y);
     this.crosshairVertical = new LineData(x, '0', x, this.mainSvgRef.nativeElement.clientHeight.toString());
+    this.updateDescriptionText(xCoordinate);
+    // Update y-axis price level
+    if (this.yAxisLevel) {
+      let yLevel: number = this.maxY - yCoordinate / this.dy;
+      if (this._isLogScale)
+        yLevel = Math.pow(10, yLevel);
+      this.yAxisLevel.text = yLevel.toFixed(2).toString();
+      this.yAxisLevel.y = y;
+    }
   }
 
-  onMouseLeave(event: MouseEvent) {
+  onMouseLeave(_: MouseEvent) {
     this.crosshairService.xCoordinate = -1;
     this.crosshairHorizontal = undefined;
     this.crosshairVertical = undefined;
     this.subscribeToCrosshairEvent();
+    this.updateDescriptionText();
+    this.yAxisLevel = undefined;
   }
 
   private subscribeToCrosshairEvent(): void {
-    this.mouseXCoordinateSubscription = this.crosshairService.newCoordinate$.subscribe((xCoordinate: number) => {
-      if (xCoordinate < 0) this.crosshairVertical = undefined;
+    this.mouseXCoordinateSubscription = this.crosshairService.newCoordinate$.subscribe((xPos: number) => {
+      if (xPos < 0) this.crosshairVertical = undefined;
       else {
         const bounding: DOMRect = (this.mainSvgRef.nativeElement as Element).getBoundingClientRect();
-        const x: string = (xCoordinate - bounding.left).toString();
-        this.crosshairVertical = new LineData(x, '0', x, this.mainSvgRef.nativeElement.clientHeight.toString());                                    
+        const xCoordinate: number = xPos - bounding.left;
+        const x: string = xCoordinate.toString();
+        this.crosshairVertical = new LineData(x, '0', x, this.mainSvgRef.nativeElement.clientHeight.toString());  
+        if (xCoordinate < 0) this.updateDescriptionText();
+        else this.updateDescriptionText(xCoordinate);                               
       }
     });
   }
@@ -125,10 +151,12 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
   @Input() gridLineNum: number = 10;
   @Input() set marketData(value: MarketData) {
     this._marketData = value;
+    this.createDescriptionText();
     this.draw();
   }
   @Input() set chartData(value: ChartData[]) {
     this._chartData = value;
+    this.createDescriptionText();
     this.draw();
   }
   @Input() set isLogScale(value: boolean) {
@@ -173,6 +201,74 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
             this.plotPriceLineChart();
             break;
     }
+  } 
+  private getDatapointIndex(xCoordinate?: number): number {
+    let index: number = -1;
+    if (xCoordinate) {
+      index = Math.round((xCoordinate - this.minX) / (this.width + this.separation));
+      if (index < 0) index = 0;
+      if (this.isPriceChart) {
+        if (this._marketData && index >= this._marketData.length) index = this._marketData.length - 1;
+      }
+      else {
+        const dataPointLength: number = this.getDatapointsLength();
+        if (index >= dataPointLength) index = dataPointLength - 1;
+      }
+    }
+    else {
+      if (this.isPriceChart) {
+        if (this._marketData) index = this._marketData.length - 1;
+      }
+      else {
+        index = this.getDatapointsLength() - 1;
+      }
+    }
+    return index;
+  }
+  private updateDescriptionText(xCoordinate?: number): void {
+    if (this.descriptionData.length === 0) return;
+    const index: number = this.getDatapointIndex(xCoordinate);
+    let currentIndex: number = 0;
+    if (this.isPriceChart) {
+      this.descriptionData[0].text = `O: ${this._marketData.open.values[index]}`;
+      this.descriptionData[1].text = `H: ${this._marketData.high.values[index]}`;
+      this.descriptionData[2].text = `L: ${this._marketData.low.values[index]}`;
+      this.descriptionData[3].text = `C: ${this._marketData.close.values[index]}`;
+      currentIndex = 4;
+    }
+    for (let i = 0; i < this._chartData.length; i++) {
+      const currentChartData: ChartData = this._chartData[i];
+      if (currentChartData.yValues instanceof Column) {
+        const column: Column = currentChartData.yValues as Column;
+        this.descriptionData[currentIndex].text = column.values[index].toFixed(2).toString();
+      }
+      currentIndex++;
+    }
+  }
+  private createDescriptionText(): void {
+    this.descriptionData = [];
+    if (this.isPriceChart) {
+      if (!this._marketData) return;
+      const index: number = this._marketData.length - 1;
+      this.descriptionData.push(new ChartDescriptionData(`O: ${this._marketData.open.values[index]}`, '#FFFFFF'));
+      this.descriptionData.push(new ChartDescriptionData(`H: ${this._marketData.high.values[index]}`, '#FFFFFF'));
+      this.descriptionData.push(new ChartDescriptionData(`L: ${this._marketData.low.values[index]}`, '#FFFFFF'));
+      this.descriptionData.push(new ChartDescriptionData(`C: ${this._marketData.close.values[index]}`, '#FFFFFF'));
+    }
+    if (this._chartData.length === 0) return;
+    
+    for (let i = 0; i < this._chartData.length; i++) {
+      const currentChartData: ChartData = this._chartData[i];
+      if (currentChartData.yValues instanceof Parameter) {
+        const parameter: Parameter = currentChartData.yValues as Parameter;
+        this.descriptionData.push(new ChartDescriptionData(parameter.value.toFixed(2).toString(), currentChartData.color));
+      }
+      else if (currentChartData.yValues instanceof Column) {
+        const column: Column = currentChartData.yValues as Column;
+        const index: number = column.values.length - 1;
+        this.descriptionData.push(new ChartDescriptionData(column.values[index].toFixed(2).toString(), currentChartData.color));
+      }
+    }
   }
   // Calculates the largest datapoint length our of all the ChartData instances
   private getDatapointsLength(): number {
@@ -190,9 +286,10 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     return maxLength;
   }
   private setWidthAndSeparation(): void {
+    const svgElement: SVGSVGElement = this.mainSvgRef.nativeElement as SVGSVGElement;
     // Smaller margin for the X-axis because there is more space
-    this.minX = this.mainSvgRef.nativeElement.clientWidth * 0.01;
-    this.maxX = this.mainSvgRef.nativeElement.clientWidth * 0.99;
+    this.minX = svgElement.clientWidth * 0.01;
+    this.maxX = svgElement.clientWidth * 0.99;
     let dataPointsLength: number;
     let minWidth: number;
     let minSeparation: number = 1;
@@ -209,15 +306,15 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     let minGraphWidth: number = dataPointsLength * (this.width + minSeparation);
     // Add width to candles if possible
     while (minGraphWidth <= horizontalSpace) {
-        minGraphWidth += dataPointsLength;
-        this.width++;
+        minGraphWidth += dataPointsLength * 2;
+        this.width += 2;
     }
     if (minGraphWidth > horizontalSpace && this.width > minWidth) {
-        minGraphWidth -= dataPointsLength;
-        this.width--;
+        minGraphWidth -= dataPointsLength * 2;
+        this.width -= 2;
     }
     this.separation = (horizontalSpace - dataPointsLength * this.width) / dataPointsLength;
-    //if (this.separation < 1) this.separation = 1;
+    if (this.separation < 1) this.separation = 1;
   }
   private createPriceGridAndSetLabels(): void {
     const priceSvg: SVGSVGElement = this.mainSvgRef.nativeElement as SVGSVGElement;

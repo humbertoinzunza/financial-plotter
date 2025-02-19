@@ -1,4 +1,9 @@
 <div class="container" (onResize)="onResize()">
+    <div class="description">
+        @for (description of descriptionData; track $index) {
+            <p class="description-label" [style.color]="descriptionData[$index].color">{{ descriptionData[$index].text }}</p>
+        }
+    </div>
     <div class="chart">
         <svg #mainSvg class="main-svg" (mouseenter)="onMouseEnter($event)" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave($event)">
             <g class="crosshair-layer">
@@ -27,57 +32,93 @@
             </g>
             <g class="price-chart-layer">
                 <g class="candlestick-layer">   
-                    @for (downWick of candlestickChartData.downWicks; track downWick) {
-                        <line [attr.x1]="downWick.x1" [attr.y1]="downWick.y1"
-                        [attr.x2]="downWick.x2" [attr.y2]="downWick.y2" [attr.stroke]="downtickColor" />
+                    @for (downWick of candlestickChartData.downWicks; track $index) {
+                        <line [attr.x1]="candlestickChartData.downWicks[$index].x1"
+                        [attr.y1]="candlestickChartData.downWicks[$index].y1"
+                        [attr.x2]="candlestickChartData.downWicks[$index].x2"
+                        [attr.y2]="candlestickChartData.downWicks[$index].y2"
+                        [attr.stroke]="downtickColor" />
                     }
-                    @for (upWick of candlestickChartData.upWicks; track upWick) {
-                        <line [attr.x1]="upWick.x1" [attr.y1]="upWick.y1"
-                        [attr.x2]="upWick.x2" [attr.y2]="upWick.y2" [attr.stroke]="uptickColor" />
+                    @for (upWick of candlestickChartData.upWicks; track $index) {
+                        <line [attr.x1]="candlestickChartData.upWicks[$index].x1"
+                        [attr.y1]="candlestickChartData.upWicks[$index].y1"
+                        [attr.x2]="candlestickChartData.upWicks[$index].x2"
+                        [attr.y2]="candlestickChartData.upWicks[$index].y2"
+                        [attr.stroke]="uptickColor" />
                     }
-                    @for (neutralWick of candlestickChartData.neutralWicks; track neutralWick) {
-                        <line [attr.x1]="neutralWick.x1" [attr.y1]="neutralWick.y1"
-                        [attr.x2]="neutralWick.x2" [attr.y2]="neutralWick.y2" [attr.stroke]="notickColor" />
+                    @for (neutralWick of candlestickChartData.neutralWicks; track $index) {
+                        <line [attr.x1]="candlestickChartData.neutralWicks[$index].x1"
+                        [attr.y1]="candlestickChartData.neutralWicks[$index].y1"
+                        [attr.x2]="candlestickChartData.neutralWicks[$index].x2"
+                        [attr.y2]="candlestickChartData.neutralWicks[$index].y2"
+                        [attr.stroke]="notickColor" />
                     }
-                    @for (downBody of candlestickChartData.downBodies; track downBody) {
-                        <rect [attr.x]="downBody.x" [attr.y]="downBody.y" [attr.width]="candlestickChartData.width"
-                        [attr.height]="downBody.height" [attr.fill]="downtickColor" />
+                    @for (downBody of candlestickChartData.downBodies; track $index) {
+                        <rect [attr.x]="candlestickChartData.downBodies[$index].x"
+                        [attr.y]="candlestickChartData.downBodies[$index].y"
+                        [attr.width]="candlestickChartData.width"
+                        [attr.height]="candlestickChartData.downBodies[$index].height"
+                        [attr.fill]="downtickColor" />
                     }
-                    @for (upBody of candlestickChartData.upBodies; track upBody) {
-                        <rect [attr.x]="upBody.x" [attr.y]="upBody.y" [attr.width]="candlestickChartData.width"
-                        [attr.height]="upBody.height" [attr.fill]="uptickColor" />
+                    @for (upBody of candlestickChartData.upBodies; track $index) {
+                        <rect [attr.x]="candlestickChartData.upBodies[$index].x"
+                        [attr.y]="candlestickChartData.upBodies[$index].y"
+                        [attr.width]="candlestickChartData.width"
+                        [attr.height]="candlestickChartData.upBodies[$index].height"
+                        [attr.fill]="uptickColor" />
                     }   
-                    @for (neutralBody of candlestickChartData.neutralBodies; track neutralBody) {
-                        <line [attr.x1]="neutralBody.x1" [attr.y1]="neutralBody.y1"
-                        [attr.x2]="neutralBody.x2" [attr.y2]="neutralBody.y2" [attr.stroke]="notickColor" />
+                    @for (neutralBody of candlestickChartData.neutralBodies; track $index) {
+                        <line [attr.x1]="candlestickChartData.neutralBodies[$index].x1"
+                        [attr.y1]="candlestickChartData.neutralBodies[$index].y1"
+                        [attr.x2]="candlestickChartData.neutralBodies[$index].x2"
+                        [attr.y2]="candlestickChartData.neutralBodies[$index].y2"
+                        [attr.stroke]="notickColor" />
                     }     
                 </g>
                 <g class="bar-layer">
-                    @for (downLine of priceBarChartData.downLines; track downLine) {
-                        <line [attr.x1]="downLine.x1" [attr.y1]="downLine.y1"
-                        [attr.x2]="downLine.x2" [attr.y2]="downLine.y2" [attr.stroke]="downtickColor" />
+                    @for (downLine of priceBarChartData.downLines; track $index) {
+                        <line [attr.x1]="priceBarChartData.downLines[$index].x1"
+                        [attr.y1]="priceBarChartData.downLines[$index].y1"
+                        [attr.x2]="priceBarChartData.downLines[$index].x2"
+                        [attr.y2]="priceBarChartData.downLines[$index].y2"
+                        [attr.stroke]="downtickColor" />
                     }
                     @for (upLine of priceBarChartData.upLines; track upLine) {
-                        <line [attr.x1]="upLine.x1" [attr.y1]="upLine.y1"
-                        [attr.x2]="upLine.x2" [attr.y2]="upLine.y2" [attr.stroke]="uptickColor" />
+                        <line [attr.x1]="priceBarChartData.upLines[$index].x1"
+                        [attr.y1]="priceBarChartData.upLines[$index].y1"
+                        [attr.x2]="priceBarChartData.upLines[$index].x2"
+                        [attr.y2]="priceBarChartData.upLines[$index].y2"
+                        [attr.stroke]="uptickColor" />
                     }
-                    @for (neutralLine of priceBarChartData.neutralLines; track neutralLine) {
-                        <line [attr.x1]="neutralLine.x1" [attr.y1]="neutralLine.y1"
-                        [attr.x2]="neutralLine.x2" [attr.y2]="neutralLine.y2" [attr.stroke]="notickColor" />
+                    @for (neutralLine of priceBarChartData.neutralLines; track $index) {
+                        <line [attr.x1]="priceBarChartData.neutralLines[$index].x1"
+                        [attr.y1]="priceBarChartData.neutralLines[$index].y1"
+                        [attr.x2]="priceBarChartData.neutralLines[$index].x2"
+                        [attr.y2]="priceBarChartData.neutralLines[$index].y2"
+                        [attr.stroke]="notickColor" />
                     }
                 </g>
                 <g class="line-layer">
-                    @for (downLine of priceLineChartData.downLines; track downLine) {
-                        <line [attr.x1]="downLine.x1" [attr.y1]="downLine.y1"
-                        [attr.x2]="downLine.x2" [attr.y2]="downLine.y2" [attr.stroke]="downtickColor" />
+                    @for (downLine of priceLineChartData.downLines; track $index) {
+                        <line [attr.x1]="priceLineChartData.downLines[$index].x1"
+                        [attr.y1]="priceLineChartData.downLines[$index].y1"
+                        [attr.x2]="priceLineChartData.downLines[$index].x2"
+                        [attr.y2]="priceLineChartData.downLines[$index].y2"
+                        [attr.stroke]="downtickColor" />
                     }
-                    @for (upLine of priceLineChartData.upLines; track upLine) {
-                        <line [attr.x1]="upLine.x1" [attr.y1]="upLine.y1"
-                        [attr.x2]="upLine.x2" [attr.y2]="upLine.y2" [attr.stroke]="uptickColor" />
+                    @for (upLine of priceLineChartData.upLines; track $index) {
+                        <line [attr.x1]="priceLineChartData.upLines[$index].x1"
+                        [attr.y1]="priceLineChartData.upLines[$index].y1"
+                        [attr.x2]="priceLineChartData.upLines[$index].x2"
+                        [attr.y2]="priceLineChartData.upLines[$index].y2"
+                        [attr.stroke]="uptickColor" />
                     }
-                    @for (neutralLine of priceLineChartData.neutralLines; track neutralLine) {
-                        <line [attr.x1]="neutralLine.x1" [attr.y1]="neutralLine.y1"
-                        [attr.x2]="neutralLine.x2" [attr.y2]="neutralLine.y2" [attr.stroke]="notickColor" />
+                    @for (neutralLine of priceLineChartData.neutralLines; track $index) {
+                        <line [attr.x1]="priceLineChartData.neutralLines[$index].x1"
+                        [attr.y1]="priceLineChartData.neutralLines[$index].y1"
+                        [attr.x2]="priceLineChartData.neutralLines[$index].x2"
+                        [attr.y2]="priceLineChartData.neutralLines[$index].y2"
+                        [attr.stroke]="notickColor" />
                     }
                 </g>
             </g>
@@ -118,8 +159,11 @@
     </div>
     <div class="price-levels">
         <svg class="price-level-svg">
-            @for(yAxisLegend of yAxisLegends; track yAxisLegend) {
-                <text x="0" [attr.y]="yAxisLegend.y" font-size="12px" fill="gray">{{ yAxisLegend.text }}</text>
+            @if (yAxisLevel) {
+                <text x="0" [attr.y]="yAxisLevel.y" font-size="12px" fill="white">{{ yAxisLevel.text }}</text>
+            }
+            @for(yAxisLegend of yAxisLegends; track $index) {
+                <text x="0" [attr.y]="yAxisLegends[$index].y" font-size="12px" fill="gray">{{ yAxisLegends[$index].text }}</text>
             }
         </svg>
     </div>
